@@ -10,18 +10,18 @@ class Pulsesensor:
     
     def getBPMLoop(self):
       # initize variable
-      rate = [0] * 10 
-      sampleCounter = 0
-      lastBeatTime = 0
-      P = 512
-      T = 512
-      thresh = 525
-      amp = 100
+      rate = [0] * 10         # holds lat 10 IBI values
+      sampleCounter = 0       # determine pulse timing
+      lastBeatTime = 0        # find IBI
+      P = 512                 # find peak pulse wave
+      T = 512                 # find trough pulse wave (bottom)
+      thresh = 525            # find instant moment of beat
+      amp = 100               # hold amp of pulse wave
       firstBeat = True
       secondBeat = False
       
-      IBI = 600
-      Pulse = False
+      IBI = 600               # holds time interval between beats
+      Pulse = False            # true when theres a pulse
       lastTime = int(time.time() * 1000)
       
       while not self.thread.stopped:
