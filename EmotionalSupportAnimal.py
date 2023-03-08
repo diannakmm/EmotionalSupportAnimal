@@ -73,6 +73,14 @@ def hexToInt(hex):
         val = int(hex[0:2], 16)
         return val
 
+# Function to start motor at speed
+def startMotor(speed):
+	pass
+
+#Function to change motor speed --> will be used to stop motor as well
+def changeMotorSpeed(speed):
+	pass
+
 def setuptouch():
     pass
 
