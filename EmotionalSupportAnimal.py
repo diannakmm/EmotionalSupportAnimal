@@ -1,6 +1,8 @@
 import spidev
 import time
 import pexpect
+import RPi.GPIO as GPIO
+
 
 def info():
     '''Prints a basic library description'''
@@ -16,6 +18,11 @@ spi.open(0,0)
 def setupHR():
 	spi = spidev.SpiDev()
 	spi.open(0,0)
+
+# Setup GPIO to BCM
+# Might not need this function and just set up in global
+def setupMotor():
+	GPIO.setmode(GPIO.BCM)
 
 # Get data from adc
 def get_adc(channel):
@@ -73,13 +80,21 @@ def hexToInt(hex):
         val = int(hex[0:2], 16)
         return val
 
-# Function to start motor at speed
-def startMotor(speed):
-	pass
-
-#Function to change motor speed --> will be used to stop motor as well
-def changeMotorSpeed(speed):
-	pass
+# Function to set motor speed
+# Will be used to start and stop motor
+# Speed = 0 means stop, will send this in main with threshold code
+# Speed ~ bpm
+def motorSpeed(speed, motorpin = 13):
+    # Speed = 0 mean turn the motor off
+    if (speed == 0): #not sure if pass does nothing, might need to do GPIO.cleanup()
+        pass
+    # Just trying to get the motor running right now
+    else:
+        GPIO.setup(motorpin,, GPIO.OUT)
+        GPIO.setup(motorpin, GPIO.HIGH)
+        time.sleep(1000)
+        GPIO.setup(motorpin, GPIO.LOW)
+        time.sleep(1000)
 
 def setuptouch():
     pass
