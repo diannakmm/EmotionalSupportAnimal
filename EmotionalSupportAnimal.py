@@ -12,6 +12,8 @@ def info():
 spi = spidev.SpiDev()
 spi.open(0,0)
 
+# Set motor pin
+motorPin = 3
 
 # Establish SPI connection with Bus 0, Device 0
 # Make sure HR sensor if connected to SPI 0
@@ -84,17 +86,13 @@ def hexToInt(hex):
 # Will be used to start and stop motor
 # Speed = 0 means stop, will send this in main with threshold code
 # Speed ~ bpm
-def motorSpeed(speed, motorpin = 13):
-    # Speed = 0 mean turn the motor off
-    if (speed == 0): #not sure if pass does nothing, might need to do GPIO.cleanup()
-        pass
-    # Just trying to get the motor running right now
-    else:
-        GPIO.setup(motorpin,, GPIO.OUT)
-        GPIO.setup(motorpin, GPIO.HIGH)
-        time.sleep(1000)
-        GPIO.setup(motorpin, GPIO.LOW)
-        time.sleep(1000)
+def motorSpeed(motorpin = 3):
+        GPIO.setup(motorPin, GPIO.OUT)
+        while True:
+                GPIO.output(motorPin, GPIO.HIGH)
+                time.sleep(1)
+                GPIO.output(motorPin, GPIO.LOW)
+                time.sleep(1)
 
 def setuptouch():
     pass
