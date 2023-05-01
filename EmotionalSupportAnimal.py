@@ -4,6 +4,7 @@ import pexpect
 import RPi.GPIO as GPIO
 from gpiozero import LED
 from digitalio import DigitalInOut, Direction
+import board
 
 def info():
     '''Prints a basic library description'''
@@ -19,6 +20,7 @@ motorPin = 3
 motorLED = LED(26)
 GPIO.setup(motorPin, GPIO.OUT)
 GPIO.output(motorPin, GPIO.LOW)
+Motspeed = 0
 
 # Establish SPI connection with Bus 0, Device 0
 # Make sure HR sensor if connected to SPI 0
@@ -91,7 +93,8 @@ def hexToInt(hex):
 # Will be used to start and stop motor
 # Speed = 0 means stop, will send this in main with threshold code
 # Speed ~ bpm
-def motorSpeed(speed = 1):
+def motorSpeed(speed):
+        Motspeed = speed
         GPIO.setup(motorPin, GPIO.OUT)
         while True:
                 GPIO.output(motorPin, GPIO.HIGH)
@@ -99,12 +102,21 @@ def motorSpeed(speed = 1):
                 time.sleep(speed)
                 GPIO.output(motorPin, GPIO.LOW)
                 motorLED.off()
-                time.sleep(1)
+                time.sleep(speed)
+
+def motorStop():
+        GPIO.setup(motorPin, GPIO.OUT)
+        while True:
+                GPIO.output(motorPin, GPIO.LOW)
+                motorLED.off()
+
+def decreaseSpeed(speed):
+        motorSpeed(Motspeed - speed)
 
 def setuptouch():
     pad_pin = board.D23
     # connect each pin with the digital in out of the 5 pad
-    pad = DigitalINOut(pad_pin)
+    pad = DigitalInOut(pad_pin)
     pad.direction = Direction.INPUT
     # when works, prints petting
     while True:
@@ -112,5 +124,5 @@ def setuptouch():
             print("Petting")
             time.sleep(0.1)
 
-def gettouch():
+def getFlex():
     pass
