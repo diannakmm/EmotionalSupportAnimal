@@ -2,7 +2,8 @@ import spidev
 import time
 import pexpect
 import RPi.GPIO as GPIO
-
+from gpiozero import LED
+from digitalio import DigitalInOut, Direction
 
 def info():
     '''Prints a basic library description'''
@@ -13,7 +14,11 @@ spi = spidev.SpiDev()
 spi.open(0,0)
 
 # Set motor pin
+GPIO.setmode(GPIO.BCM)
 motorPin = 3
+motorLED = LED(26)
+GPIO.setup(motorPin, GPIO.OUT)
+GPIO.output(motorPin, GPIO.LOW)
 
 # Establish SPI connection with Bus 0, Device 0
 # Make sure HR sensor if connected to SPI 0
@@ -86,16 +91,26 @@ def hexToInt(hex):
 # Will be used to start and stop motor
 # Speed = 0 means stop, will send this in main with threshold code
 # Speed ~ bpm
-def motorSpeed(motorpin = 3):
+def motorSpeed(speed = 1):
         GPIO.setup(motorPin, GPIO.OUT)
         while True:
                 GPIO.output(motorPin, GPIO.HIGH)
-                time.sleep(1)
+                motorLED.on()
+                time.sleep(speed)
                 GPIO.output(motorPin, GPIO.LOW)
+                motorLED.off()
                 time.sleep(1)
 
 def setuptouch():
-    pass
+    pad_pin = board.D23
+    # connect each pin with the digital in out of the 5 pad
+    pad = DigitalINOut(pad_pin)
+    pad.direction = Direction.INPUT
+    # when works, prints petting
+    while True:
+        if pad.value:
+            print("Petting")
+            time.sleep(0.1)
 
 def gettouch():
     pass
