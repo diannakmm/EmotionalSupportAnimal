@@ -7,7 +7,8 @@ import sys
 e = Event()
 q = Queue()
 
-threshold = 110
+threshold = [2]
+threshold[0] = 110
 
 # Setup all sensors
 esa.setupHR()
@@ -22,6 +23,8 @@ def HR():
 		esa.motorSpeed(threshold / curr_HR)
 	elif curr_HR < threshold:
 		esa.motorStop()
+
+"""
 
 # Check when being petted
 # Is motor on?
@@ -41,17 +44,23 @@ def hugged():
 		esa.decreaseSpeed(0.1)
 		time.wait(1)
 
+"""
+
 # Change threshold of heart rate
 def change_HR(thresh):
-	threshold = thresh
+	threshold[0] = thresh
+	print("changed threshold to ", threshold[0])
 
-t1 = Thread(target = HR)
-t1.start()
-t2 = Thread(target = petted)
-t2.start()
-t3 = Thread(target = hugged)
-t3.start()
+def get_thresh():
+	return threshold[0]
 
-t1.join()
-t2.join()
-t3.join()
+#t1 = Thread(target = HR)
+#t1.start()
+#t2 = Thread(target = petted)
+#t2.start()
+#t3 = Thread(target = hugged)
+#t3.start()
+
+#t1.join()
+#t2.join()
+#t3.join()

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html class="text-center" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EMA_Site</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
+</head>
+
+<body>
+    <form method="post" action="/Live.html">
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link" href="Home_Good.html"><i class="fas fa-home text-dark"></i>&nbsp;Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="Past.html"><img width="16" height="16" src="assets/img/past_data.png">&nbsp;Past Data</a></li>
+            <li class="nav-item"><a class="nav-link active" href="Live.html"><i class="far fa-chart-bar text-dark" style="font-size: 16px;"></i>&nbsp;Live Heart Rate</a></li>
+        </ul><img width="733" height="394" src="assets/img/HR_graph.png">
+        <p class="text-center">Set Threshold BPM:&nbsp;<input class="form-control form-control-lg d-lg-flex" type="number" id="new_treshold" name="new_treshold" step="1" placeholder="{{ Threshold }}"><input class="btn btn-sm btn-primary" type="submit"></p>
+    </form><em class="text-secondary">Note: Threshold BPM will be when breakdowns will be recorded</em>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
