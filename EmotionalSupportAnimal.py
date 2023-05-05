@@ -24,9 +24,28 @@ Motspeed = 0
 
 # Establish SPI connection with Bus 0, Device 0
 # Make sure HR sensor if connected to SPI 0
-def setupHR():
+def setupHR_Wired():
 	spi = spidev.SpiDev()
 	spi.open(0,0)
+
+BT_data = [2]
+ch = [2]
+
+def setupHR_BT():
+        # Probably will need a seperate function to find BT device ip address
+        Device = "E5:74:B0:F1:CE:9B"
+        # Establish connection to bluetooth device
+        child = pexpect.spawn("sudo gatttool -t random -b {0} -I".format(Device))
+        child.sendline("Connect")
+        child.expect("Connection successful", timeout = 5)
+        # If got here, then connection to BT device was successful
+        # Can just directly read from sensor
+        ch[0] = child
+#child.sendline("char-write-req 0x0011 0100")
+ #       child.expect("Notification handle = 0x0010 value: ", timeout = 10)
+  #      child.expect("\r\n", timeout = 10)
+   #     BT_data[0] = child
+
 
 # Setup GPIO to BCM
 # Might not need this function and just set up in global
@@ -71,18 +90,12 @@ def getBPM_wired():
 
 # Should get BPM from BT sensor
 def getBPM_BT():
-        # Probably will need a seperate function to find BT device ip address
-        Device = "E5:74:B0:F1:CE:9B"
-        # Establish connection to bluetooth device
-        child = pexpect.spawn("sudo gatttool -t random -b {0} -I".format(Device))
-        child.sendline("Connect")
-        child.expect("Connection successful", timeout = 5)
-        # If got here, then connection to BT device was successful
-        # Can just directly read from sensor
-        child.sendline("char-write-req 0x0011 0100")
-        child.expect("Notification handle = 0x0010 value: ", timeout = 10)
-        child.expect("\r\n", timeout = 10)
-        return(hexToInt(child.before[3:5]))
+	ch[0].sendline("char-write-req 0x0011 0100")
+	ch[0].expect("Notification handle = 0x0010 value: ", timeout = 10)
+	ch[0].expect("\r\n", timeout = 10)
+        #BT_data[0] = child
+
+	return(hexToInt(ch[0].before[3:5]))
 
 # Function to convert hexa-decimal values to integer values
 def hexToInt(hex):
@@ -96,19 +109,28 @@ def hexToInt(hex):
 def motorSpeed(speed):
         Motspeed = speed
         GPIO.setup(motorPin, GPIO.OUT)
-        while True:
-                GPIO.output(motorPin, GPIO.HIGH)
-                motorLED.on()
-                time.sleep(speed)
-                GPIO.output(motorPin, GPIO.LOW)
-                motorLED.off()
-                time.sleep(speed)
+#        while True:
+ #               GPIO.output(motorPin, GPIO.HIGH)
+  #              motorLED.on()
+   #             time.sleep(speed)
+    #            GPIO.output(motorPin, GPIO.LOW)
+     #           motorLED.off()
+      #          time.sleep(speed)
+        GPIO.output(motorPin, GPIO.HIGH)
+        motorLED.on()
+        time.sleep(speed)
+        GPIO.output(motorPin, GPIO.LOW)
+        motorLED.off()
+        time.sleep(speed)
+
 
 def motorStop():
         GPIO.setup(motorPin, GPIO.OUT)
-        while True:
-                GPIO.output(motorPin, GPIO.LOW)
-                motorLED.off()
+#        while True:
+ #               GPIO.output(motorPin, GPIO.LOW)
+  #              motorLED.off()
+        GPIO.output(motorPin, GPIO.LOW)
+        motorLED.off()
 
 def decreaseSpeed(speed):
         motorSpeed(Motspeed - speed)
