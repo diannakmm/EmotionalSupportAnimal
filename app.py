@@ -1,7 +1,43 @@
 from flask import Flask, render_template, redirect, request
 import EmotionalSupportAnimal as EMA
 import time
-import demo
+from threading import Thread, Event
+from queue import Queue
+import sys
+
+# Functions for Flask
+e = Event()
+q = Queue()
+
+threshold = [2]
+threshold[0] = 70
+
+# Setup Sensors
+EMA.setupMotor()
+
+# Check when heart rate >= set threshold
+# Turn motor func on when threshold is exceeded
+# Turn motor func off when threshold is not exceeded
+def HR():
+	curr_HR = EMA.getBPM_BT()
+	if curr_HR >= int(threshold[0]):
+		EMA.motorSpeed(int(threshold[0]) / curr_HR)
+	elif curr_HR < int(threshold[0]):
+		EMA.motorStop()
+	return curr_HR
+
+# Threshold functions
+def change_HR(thresh):
+	threshold[0] = thresh
+
+def get_thresh():
+	return threshold[0]
+
+def dummy():
+	time.sleep(1)
+	return
+
+# Flask Code
 
 app = Flask(__name__, static_folder='assets')
 
@@ -23,8 +59,9 @@ def home_bad_template():
 
 @app.route("/home")
 def home_template():
-	BP = EMA.getBPM_BT()
-	thres = int(demo.get_thresh())
+	#BP = EMA.getBPM_BT()
+	BP = HR()
+	thres = int(get_thresh())
 	# If not having a breakdown
 	if BP < thres:
 		return render_template("Home_Good.html", BPM=BP, Thresh=thres)
@@ -41,10 +78,10 @@ def live_template():
 	# If trying to change the threshold
 	if request.method==('POST'):
 		new_thresh = request.form['new_treshold']
-		demo.change_HR(new_thresh)
-		print("threshold is now ", demo.get_thresh())
+		change_HR(new_thresh)
+		print("threshold is now ", get_thresh())
 		return render_template("Live.html", Threshold=new_thresh)
-	return render_template("Live.html", Threshold=demo.get_thresh())
+	return render_template("Live.html", Threshold=get_thresh())
 
 if __name__ == "__main__":
 	app.run(host='0.0.0.0', port=80, debug=True, threaded=True)

@@ -30,7 +30,7 @@ def setupHR_Wired():
 
 BT_data = [2]
 ch = [2]
-
+"""
 def setupHR_BT():
         # Probably will need a seperate function to find BT device ip address
         Device = "E5:74:B0:F1:CE:9B"
@@ -46,7 +46,7 @@ def setupHR_BT():
   #      child.expect("\r\n", timeout = 10)
    #     BT_data[0] = child
 
-
+"""
 # Setup GPIO to BCM
 # Might not need this function and just set up in global
 def setupMotor():
@@ -90,12 +90,16 @@ def getBPM_wired():
 
 # Should get BPM from BT sensor
 def getBPM_BT():
-	ch[0].sendline("char-write-req 0x0011 0100")
-	ch[0].expect("Notification handle = 0x0010 value: ", timeout = 10)
-	ch[0].expect("\r\n", timeout = 10)
+	Device = "E5:74:B0:F1:CE:9B"
+	child = pexpect.spawn("sudo gatttool -t random -b {0} -I".format(Device))
+	child.sendline("Connect")
+	child.expect("Connection successful", timeout = 5)
+	child.sendline("char-write-req 0x0011 0100")
+	child.expect("Notification handle = 0x0010 value: ", timeout = 10)
+	child.expect("\r\n", timeout = 10)
         #BT_data[0] = child
 
-	return(hexToInt(ch[0].before[3:5]))
+	return(hexToInt(child.before[3:5]))
 
 # Function to convert hexa-decimal values to integer values
 def hexToInt(hex):
@@ -109,13 +113,9 @@ def hexToInt(hex):
 def motorSpeed(speed):
         Motspeed = speed
         GPIO.setup(motorPin, GPIO.OUT)
-#        while True:
- #               GPIO.output(motorPin, GPIO.HIGH)
-  #              motorLED.on()
-   #             time.sleep(speed)
-    #            GPIO.output(motorPin, GPIO.LOW)
-     #           motorLED.off()
-      #          time.sleep(speed)
+        # check if speed is 0
+        if speed == 0:
+                motorStop()
         GPIO.output(motorPin, GPIO.HIGH)
         motorLED.on()
         time.sleep(speed)
@@ -131,9 +131,11 @@ def motorStop():
   #              motorLED.off()
         GPIO.output(motorPin, GPIO.LOW)
         motorLED.off()
+        return
 
 def decreaseSpeed(speed):
-        motorSpeed(Motspeed - speed)
+        Motspeed = Motspeed - speed
+        motorSpeed(Motspeed)
 
 def setuptouch():
     pad_pin = board.D23
